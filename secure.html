@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ZachFire's Database [SECURE]</title>
+    <link rel="icon" type="image/png" href="MySymbol.png">
+    <style>
+        /* CORE VISUALS */
+        body { font-family: monospace; background: #000; color: #0f0; margin: 0; overflow-x: hidden; }
+        
+        /* LOGIN BOX */
+        #auth-container {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            border: 2px solid #0f0; background: rgba(0,20,0,0.95); padding: 30px;
+            text-align: center; width: 400px; z-index: 100; box-shadow: 0 0 20px #0f0;
+        }
+
+        /* INPUTS */
+        input { background: #111; border: 1px solid #0f0; color: #0f0; padding: 10px; width: 90%; margin: 10px 0; font-family: monospace; text-align: center; font-size: 18px; }
+        
+        /* BUTTONS */
+        button { background: #0f0; color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; margin-top: 10px; width: 100%; font-family: monospace; font-size: 18px; }
+        button:hover { background: #fff; }
+        
+        /* REQUEST BUTTON */
+        .req-btn { background: transparent; border: 1px solid #0f0; color: #0f0; margin-top: 15px; font-size: 14px; }
+        .req-btn:hover { background: rgba(0, 255, 0, 0.2); color: white; }
+
+        /* MAIN SITE (Hidden) */
+        #app-interface { display: none; padding: 20px; text-align: center; }
+        
+        #error-msg { color: red; margin-top: 10px; font-size: 14px; font-weight: bold; }
+        
+        /* MATRIX BG */
+        canvas { position: fixed; top: 0; left: 0; z-index: -1; }
+        
+        /* VERSION TAG */
+        .version-tag { color: #555; font-size: 10px; margin-bottom: 10px; display: block; }
+    </style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+
+<!-- LOGIN SCREEN -->
+<div id="auth-container">
+    <h2 style="text-shadow: 0 0 5px #0f0; margin-bottom: 5px;">SECURE LOGIN</h2>
+    <span class="version-tag">SYSTEM VERSION: v3.0 (BACKDOOR)</span>
+    
+    <!-- THE LOGIN INPUTS -->
+    <input type="text" id="agent-name" placeholder="CODENAME / EMAIL">
+    <input type="password" id="pass-input" placeholder="PASSWORD">
+    
+    <button onclick="attemptLogin()">AUTHENTICATE</button>
+    
+    <!-- THE REQUEST LINK -->
+    <button class="req-btn" onclick="requestAccess()">[ REQUEST ACCESS CODE ]</button>
+
+    <p id="error-msg"></p>
+</div>
+
+<!-- THE REAL SITE (Hidden until unlocked) -->
+<div id="app-interface">
+    <div style="border: 1px solid #0f0; padding: 10px; display: inline-block; margin-bottom: 20px;">
+        LOGGED IN: <span id="user-display">UNKNOWN</span>
+        <button onclick="logout()" style="width: auto; background: red; color: white; padding: 5px; font-size: 10px;">LOGOUT</button>
+    </div>
+
+    <br>
+    <div style="display: flex; justify-content: center; gap: 20px;">
+        <img src="MySymbol.png" width="150">
+        <img src="Hacker.png" width="150">
+    </div>
+
+    <h1>ZACHFIRE DATABASE: UNLOCKED</h1>
+    
+    <div style="border: 2px solid #0f0; padding: 20px; max-width: 600px; margin: 0 auto; background: rgba(0,20,0,0.8);">
+        <h3 style="border-bottom: 1px solid #0f0; padding-bottom: 10px;">[ MISSION SELECT ]</h3>
+        
+        <a href="lesson1.html" style="color:#0f0; display:block; margin:15px; text-decoration:none; font-size: 18px;">>> LEVEL 1: THE SKELETON</a>
+        <a href="lesson2.html" style="color:#0f0; display:block; margin:15px; text-decoration:none; font-size: 18px;">>> LEVEL 2: THE STYLE</a>
+        <a href="lesson3.html" style="color:#0f0; display:block; margin:15px; text-decoration:none; font-size: 18px;">>> LEVEL 3: THE BRAIN</a>
+        
+        <br>
+        <a href="DarkKnightPrank.html" target="_blank" style="color:red; display:block; margin:10px;">[ OPEN DARK KNIGHT PRANK ]</a>
+    </div>
+</div>
+
+<script>
+    // --- 1. YOUR SECRET DATABASE ---
+    const agentDatabase = {
+        "eliaz2025@swbgs.com": "NotZachFire",  // <--- THIS IS YOU
+        "guest": "guest"
+    };
+    
+    // --- 2. YOUR EMAIL FOR REQUESTS ---
+    const adminEmail = "eliaz2025@swbgs.com"; 
+
+    // --- 3. LOGIN LOGIC ---
+    function attemptLogin() {
+        let name = document.getElementById("agent-name").value.toLowerCase().trim(); 
+        let pass = document.getElementById("pass-input").value;
+        let errorBox = document.getElementById("error-msg");
+
+        // Check if user exists in your list
+        if (agentDatabase[name]) {
+            // Check if password matches that specific user
+            if (agentDatabase[name] === pass) {
+                localStorage.setItem("agentName", name);
+                unlockSystem(name);
+            } else {
+                errorBox.innerText = "ACCESS DENIED: WRONG PASSWORD";
+                document.getElementById("auth-container").style.borderColor = "red";
+            }
+        } else {
+            errorBox.innerText = "ACCESS DENIED: AGENT NOT FOUND";
+            document.getElementById("auth-container").style.borderColor = "red";
+        }
+    }
+
+    // --- 4. REQUEST ACCESS LOGIC ---
+    function requestAccess() {
+        let subject = "Requesting Access to ZachFire Database";
+        let body = "Agent Name: [Type Name]%0D%0APlease create an account for me.";
+        window.location.href = `mailto:${adminEmail}?subject=${subject}&body=${body}`;
+    }
+
+    function unlockSystem(name) {
+        document.getElementById("auth-container").style.display = "none";
+        document.getElementById("app-interface").style.display = "block";
+        document.getElementById("user-display").innerText = name.toUpperCase();
+    }
+
+    function logout() {
+        localStorage.removeItem("agentName");
+        location.reload();
+    }
+
+    window.onload = function() {
+        let savedUser = localStorage.getItem("agentName");
+        if (savedUser) unlockSystem(savedUser);
+        startMatrix();
+    }
+
+    // --- 5. MATRIX RAIN ---
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    function startMatrix() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const chars = "01";
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0F0';
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(draw, 33);
+    }
+</script>
+</body>
+</html>
