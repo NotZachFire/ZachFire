@@ -116,85 +116,93 @@ input {
 </div>
 
 <script>
-// --- AUTHENTICATION SYSTEM ---
+    // --- 1. THE AGENT DATABASE ---
+    // This is where you add your friends.
+    // Format: "email": "password"
+    const agentDatabase = {
+        "": "",  
+        "": "",      
+        "": "", 
+        "": ""    
+    };
+    
+    // CHANGE THIS TO YOUR REAL EMAIL FOR REQUESTS
+    const adminEmail = "YOUR_REAL_EMAIL_HERE@gmail.com"; 
 
-// 1. Check if user is ALREADY logged in when page loads
-window.onload = function() {
-    let savedUser = localStorage.getItem("agentName");
-    if (savedUser) {
-        unlockSystem(savedUser);
-    }
-    startMatrix(); // Start the rain
-};
+    // --- 2. LOGIN LOGIC (Advanced) ---
+    function attemptLogin() {
+        let name = document.getElementById("agent-name").value.toLowerCase().trim(); // Their Email
+        let pass = document.getElementById("pass-input").value; // Their Password
+        let errorBox = document.getElementById("error-msg");
 
-async function attemptLogin() {
-    let name = document.getElementById("agent-name").value;
-    let pass = document.getElementById("pass-input").value;
-    let errorBox = document.getElementById("error-msg");
-
-    // 2. HASH THE PASSWORD (Security)
-    // This checks for the password "ZACH"
-    const msgBuffer = new TextEncoder().encode(pass);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
-    const correctHash = "4a9a9ddc536c127ed64f6cba2add7c4cc5629aef107d45a9bcc72191463cb681"; 
-
-    if (hashHex === correctHash) {
-        // 3. SUCCESS: Save their name to browser memory
-        localStorage.setItem("agentName", name);
-        unlockSystem(name);
-    } else {
-        // 4. FAIL
-        errorBox.innerText = "ACCESS DENIED: INVALID CREDENTIALS";
-        document.getElementById("login-screen").style.border = "2px solid red";
-    }
-}
-
-function unlockSystem(name) {
-    document.getElementById("login-screen").style.display = "none";
-    document.getElementById("main-content").style.display = "block";
-    document.getElementById("agent-badge").style.display = "block";
-    // Forces the name to ALL CAPS to look cool
-    document.getElementById("badge-name").innerText = name.toUpperCase();
-}
-
-function logout() {
-    // Erase the memory
-    localStorage.removeItem("agentName");
-    location.reload(); 
-}
-
-// Allow "Enter" key
-document.getElementById("pass-input").addEventListener("keydown", (e) => { if (e.key === "Enter") attemptLogin(); });
-
-// --- MATRIX RAIN ---
-const canvas = document.getElementById('matrix');
-const ctx = canvas.getContext('2d');
-function startMatrix() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%\"'#&_(),.;:?!\\|{}<>[]^~";
-    const fontSize = 16;
-    const columns = canvas.width / fontSize;
-    const rainDrops = Array(Math.floor(columns)).fill(1);
-
-    function draw() {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#0F0';
-        ctx.font = fontSize + 'px monospace';
-        for (let i = 0; i < rainDrops.length; i++) {
-            const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-            ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
-            if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                rainDrops[i] = 0;
+        // Check if the person exists in the database
+        if (agentDatabase[name]) {
+            // If they exist, check if the password matches THEIR password
+            if (agentDatabase[name] === pass) {
+                // SUCCESS!
+                localStorage.setItem("agentName", name);
+                unlockSystem(name);
+            } else {
+                // WRONG PASSWORD for that specific user
+                errorBox.innerText = "ACCESS DENIED: WRONG PASSWORD FOR " + name.toUpperCase();
+                document.getElementById("auth-container").style.borderColor = "red";
             }
-            rainDrops[i]++;
+        } else {
+            // USER NOT FOUND
+            errorBox.innerText = "ACCESS DENIED: AGENT NOT RECOGNIZED";
+            document.getElementById("auth-container").style.borderColor = "red";
         }
     }
-    setInterval(draw, 30);
-}
+
+    // --- 3. REQUEST ACCESS LOGIC ---
+    function requestAccess() {
+        let subject = "Requesting Unique Access Code";
+        let body = "Agent Name: [Type Name]%0D%0APlease create an account for me.";
+        window.location.href = `mailto:${adminEmail}?subject=${subject}&body=${body}`;
+    }
+
+    function unlockSystem(name) {
+        document.getElementById("auth-container").style.display = "none";
+        document.getElementById("app-interface").style.display = "block";
+        document.getElementById("user-display").innerText = name.toUpperCase();
+    }
+
+    function logout() {
+        localStorage.removeItem("agentName");
+        location.reload();
+    }
+
+    // Check if already logged in
+    window.onload = function() {
+        let savedUser = localStorage.getItem("agentName");
+        if (savedUser) unlockSystem(savedUser);
+        startMatrix();
+    }
+
+    // --- 4. MATRIX ANIMATION ---
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    function startMatrix() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const chars = "01";
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0F0';
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(draw, 33);
+    }
 </script>
+
 </body>
 </html>
