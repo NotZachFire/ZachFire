@@ -3,51 +3,87 @@
 <title>ZachFire's Coding Database</title>
 <link rel="icon" type="image/png" href="MySymbol.png">
 
-<!-- 1. THE BRAIN -->
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-
 <style>
-body { font-family: monospace; background: #111; color: #f00; padding: 20px; margin: 0; overflow-x: hidden; position: relative; }
-input, textarea, button { font-family: monospace; font-size: 20px; margin: 10px 0; width: 100%; }
-button { cursor: pointer; }
+/* GLOBAL STYLES */
+body { font-family: monospace; background: #111; color: #f00; padding: 20px; margin: 0; overflow-x: hidden; }
+input, button { font-family: monospace; font-size: 20px; margin: 10px 0; width: 100%; box-sizing: border-box; }
+button { cursor: pointer; transition: 0.3s; }
 
-#matrix {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1; 
+/* MATRIX BACKGROUND */
+#matrix { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; }
+
+/* LOGIN SYSTEM STYLES */
+#login-screen {
+    text-align: center;
+    margin-top: 100px;
+    border: 2px solid #0f0;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 40px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 0 20px #0f0;
 }
 
-#coding-school {
-    border: 2px solid #0f0;
-    padding: 20px;
-    margin-top: 30px;
-    background: rgba(0, 20, 0, 0.9);
+input {
+    background: #000;
     color: #0f0;
+    border: 1px solid #0f0;
+    padding: 15px;
+}
+
+.login-btn {
+    background: #0f0;
+    color: #000;
+    border: none;
+    padding: 15px;
+    font-weight: bold;
+}
+.login-btn:hover { background: #fff; }
+
+/* MAIN SITE (Hidden by default) */
+#main-content { display: none; }
+
+/* USER BADGE (Top Right) */
+#agent-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: 1px solid #0f0;
+    padding: 5px 10px;
+    color: #0f0;
+    font-size: 14px;
+    display: none;
 }
 </style>
 </head>
 <body>
     
 <canvas id="matrix"></canvas>
-    
-<div id="login-screen" style="text-align: center; margin-top: 100px;">
-  <h1 style="color: #0f0; font-family: monospace; text-shadow: 0 0 10px #0f0;">
-    ZACHFIRE DATABASE: ACCESS RESTRICTED
-  </h1>
-  <input type="password" id="pass-input" placeholder="Enter Security Key..." 
-         style="padding: 12px; width: 250px; background: #000; color: #0f0; border: 1px solid #0f0; font-family: monospace;">
-  <br>
-  <button onclick="checkPassword()" 
-          style="margin-top: 15px; padding: 10px 30px; background: #0f0; color: #000; border: none; font-family: monospace; font-weight: bold;">
-    AUTHENTICATE
-  </button>
-  <p id="error" style="color: red; font-family: monospace; margin-top: 15px;"></p>
+
+<!-- THE NEW LOGIN SCREEN -->
+<div id="login-screen">
+  <h1 style="color: #fff; text-shadow: 0 0 10px #fff;">IDENTITY VERIFICATION</h1>
+  <p style="color: #0f0;">SECURE CONNECTION ESTABLISHED</p>
+  
+  <!-- INPUTS -->
+  <input type="text" id="agent-name" placeholder="ENTER CODENAME / EMAIL...">
+  <input type="password" id="pass-input" placeholder="ENTER SECURITY KEY...">
+  
+  <button class="login-btn" onclick="attemptLogin()">AUTHENTICATE</button>
+  
+  <p id="error-msg" style="color: red; margin-top: 15px;"></p>
 </div>
 
-<div id="main-content" style="display: none;">
+<!-- THE REAL SITE -->
+<div id="main-content">
+  
+  <!-- AGENT BADGE -->
+  <div id="agent-badge">
+      LOGGED IN: <span id="badge-name">UNKNOWN</span> 
+      <button onclick="logout()" style="font-size: 12px; padding: 2px; width: auto; margin-left: 10px; background: red; color: white; border: none;">LOGOUT</button>
+  </div>
+
   <div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
     <img src="MySymbol.png" style="max-height: 550px; width: 40%;">
     <img src="Hacker.png" style="max-height: 550px; width: 40%;">
@@ -65,94 +101,100 @@ button { cursor: pointer; }
     <a style="color: red; font-size: 25px; text-decoration: none;" href="Scammergetscammed.html" target="_blank" >[ OPEN SCAMMER GET SCAMMED ]</a> <br><br>
 
     <hr style="border-color: #0f0; margin: 40px 0;">
-    <h2 style="color: #0f0; text-shadow: 0 0 10px #0f0;">ZACHFIRE CODING SCHOOL</h2>
-    <p style="color: #0f0;">Create an account to access my secret coding tutorials.</p>
-
-    <!-- 2. THE LOGIN BUTTON -->
-    <div data-netlify-identity-button style="border: 2px solid red; padding: 10px; display: inline-block; background: #000; color: white; font-weight: bold; cursor: pointer;"></div>
-
-    <!-- 3. THE NEW MISSION SELECT MENU -->
-    <div id="coding-school" style="display: none;">
-        <h3>ACCESS GRANTED: STUDENT PORTAL</h3>
-        <p>Select your training module:</p>
+    
+    <!-- SCHOOL PORTAL -->
+    <div style="border: 2px solid #0f0; padding: 20px; background: rgba(0,20,0,0.8);">
+        <h3 style="color: #0f0;">ACCESS GRANTED: STUDENT PORTAL</h3>
+        <p style="color: #fff;">Welcome, Agent. Select your mission:</p>
         
-        <!-- LEVEL 1 LINK -->
-        <a href="lesson1.html" style="color: #0f0; text-decoration: none; font-weight: bold; font-size: 20px;">
-            [ LEVEL 1: THE SKELETON ]
-        </a> 
-        <br><br>
-
-        <!-- LEVEL 2 LINK -->
-        <a href="lesson2.html" style="color: #0f0; text-decoration: none; font-weight: bold; font-size: 20px;">
-            [ LEVEL 2: THE STYLE ]
-        </a>
-        <br><br>
-
-                <!-- LEVEL 3 (NEW) -->
-        <a href="lesson3.html" style="color: #0f0; text-decoration: none; font-weight: bold; font-size: 20px;">
-            [ LEVEL 3: THE BRAIN (JS) ]
-        </a>
-
+        <a href="lesson1.html" style="color: #0f0; font-weight: bold; font-size: 20px; text-decoration: none;">[ LEVEL 1: THE SKELETON ]</a> <br><br>
+        <a href="lesson2.html" style="color: #0f0; font-weight: bold; font-size: 20px; text-decoration: none;">[ LEVEL 2: THE STYLE ]</a> <br><br>
+        <a href="lesson3.html" style="color: #0f0; font-weight: bold; font-size: 20px; text-decoration: none;">[ LEVEL 3: THE BRAIN (JS) ]</a> <br><br>
+        <a href="lesson4.html" style="color: #0f0; font-weight: bold; font-size: 20px; text-decoration: none;">[ LEVEL 4: INTELLIGENCE ]</a>
     </div>
   </center>
 </div>
 
 <script>
-// PASSWORD LOGIC
-async function checkPassword() {
-  let entry = document.getElementById("pass-input").value;
-  const msgBuffer = new TextEncoder().encode(entry);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
-  const correctHash = "4a9a9ddc536c127ed64f6cba2add7c4cc5629aef107d45a9bcc72191463cb681";
+// --- AUTHENTICATION SYSTEM ---
 
-  if (hashHex === correctHash) {
+// 1. Check if user is ALREADY logged in when page loads
+window.onload = function() {
+    let savedUser = localStorage.getItem("agentName");
+    if (savedUser) {
+        unlockSystem(savedUser);
+    }
+    startMatrix(); // Start the rain
+};
+
+async function attemptLogin() {
+    let name = document.getElementById("agent-name").value;
+    let pass = document.getElementById("pass-input").value;
+    let errorBox = document.getElementById("error-msg");
+
+    // 2. HASH THE PASSWORD (Security)
+    // This checks for the password "ZACH"
+    const msgBuffer = new TextEncoder().encode(pass);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    const correctHash = "4a9a9ddc536c127ed64f6cba2add7c4cc5629aef107d45a9bcc72191463cb681"; 
+
+    if (hashHex === correctHash) {
+        // 3. SUCCESS: Save their name to browser memory
+        localStorage.setItem("agentName", name);
+        unlockSystem(name);
+    } else {
+        // 4. FAIL
+        errorBox.innerText = "ACCESS DENIED: INVALID CREDENTIALS";
+        document.getElementById("login-screen").style.border = "2px solid red";
+    }
+}
+
+function unlockSystem(name) {
     document.getElementById("login-screen").style.display = "none";
     document.getElementById("main-content").style.display = "block";
-  } else {
-    document.getElementById("error").textContent = "ACCESS DENIED: INVALID SECURITY KEY";
-    document.body.style.backgroundColor = "red";
-    setTimeout(() => { document.body.style.backgroundColor = "#111"; }, 1000);
-  }
+    document.getElementById("agent-badge").style.display = "block";
+    // Forces the name to ALL CAPS to look cool
+    document.getElementById("badge-name").innerText = name.toUpperCase();
 }
 
-document.getElementById("pass-input").addEventListener("keydown", (e) => { if (e.key === "Enter") checkPassword(); });
+function logout() {
+    // Erase the memory
+    localStorage.removeItem("agentName");
+    location.reload(); 
+}
 
-// NETLIFY IDENTITY LOGIC
-netlifyIdentity.on('login', user => {
-    document.getElementById('coding-school').style.display = 'block';
-});
-netlifyIdentity.on('logout', () => {
-    document.getElementById('coding-school').style.display = 'none';
-});
-</script>    
+// Allow "Enter" key
+document.getElementById("pass-input").addEventListener("keydown", (e) => { if (e.key === "Enter") attemptLogin(); });
 
-<script>
-// MATRIX RAIN
+// --- MATRIX RAIN ---
 const canvas = document.getElementById('matrix');
 const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%\"'#&_(),.;:?!\\|{}<>[]^~";
-const fontSize = 16;
-const columns = canvas.width / fontSize;
-const rainDrops = Array(Math.floor(columns)).fill(1);
-function draw() {
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#0F0';
-  ctx.font = fontSize + 'px monospace';
-  for (let i = 0; i < rainDrops.length; i++) {
-    const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-    ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
-    if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-      rainDrops[i] = 0;
+function startMatrix() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%\"'#&_(),.;:?!\\|{}<>[]^~";
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+    const rainDrops = Array(Math.floor(columns)).fill(1);
+
+    function draw() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#0F0';
+        ctx.font = fontSize + 'px monospace';
+        for (let i = 0; i < rainDrops.length; i++) {
+            const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+            ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+            if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                rainDrops[i] = 0;
+            }
+            rainDrops[i]++;
+        }
     }
-    rainDrops[i]++;
-  }
+    setInterval(draw, 30);
 }
-setInterval(draw, 30);
 </script>
 </body>
 </html>
