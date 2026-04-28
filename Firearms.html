@@ -1,0 +1,62 @@
+<html>
+<head>
+    <title>Firearms</title>
+    <link rel="icon" type="image/png" href="SigP229.png">
+    <style>
+        body { background: #000; color: #0ff; font-family: monospace; padding: 20px; }
+        .glitch { text-shadow: 0 0 10px #0f0; font-size: 24px; }
+        .data-line { margin: 10px 0; border-left: 3px solid #0f0; padding-left: 10px; }
+        span { color: #fff; }
+#matrix {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1; /* This pushes it BEHIND your buttons */
+}
+
+/* This makes your content sit on top clearly */
+body {
+  position: relative;
+  margin: 0;
+  overflow-x: hidden;
+}
+    </style>
+</head>
+<body>
+
+<h1 style="color: #0f0; font-family: monospace; font-size: 45px; text-shadow: 0 0 10px #0f0; text-align: center;">
+WELCOME TO THE OFFICIAL FIREARMS WEBSITE! </h1> <br><br>
+
+<img src="SigP229.png"
+    style="display: block; margin: 100px auto 0 auto; max-height: 550px; width: 40%;"
+
+<canvas id="matrix"></canvas>
+<script>
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const alphabet = "_"
+const fontSize = 16;
+const columns = canvas.width / fontSize;
+const rainDrops = Array(Math.floor(columns)).fill(1);
+function draw() {
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#f00';
+  ctx.font = fontSize + 'px monospace';
+  for (let i = 0; i < rainDrops.length; i++) {
+    const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+    ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+    if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+      rainDrops[i] = 0;
+    }
+    rainDrops[i]++;
+  }
+}
+setInterval(draw, 30);
+
+</script>
+</html>
