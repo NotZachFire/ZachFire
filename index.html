@@ -41,6 +41,18 @@ input {
 }
 .login-btn:hover { background: #fff; }
 
+/* NEW: REQUEST BUTTON STYLE */
+.req-btn {
+    background: transparent;
+    border: 1px solid #0f0;
+    color: #0f0;
+    font-size: 14px;
+    margin-top: 15px;
+}
+.req-btn:hover {
+    background: rgba(0, 255, 0, 0.2);
+}
+
 /* MAIN SITE (Hidden by default) */
 #main-content { display: none; }
 
@@ -65,12 +77,16 @@ input {
 <div id="login-screen">
   <h1 style="color: #fff; text-shadow: 0 0 10px #fff;">IDENTITY VERIFICATION</h1>
   <p style="color: #0f0;">SECURE CONNECTION ESTABLISHED</p>
+  <p style="color: #555; font-size: 10px;">SYSTEM VERSION: v3.0</p> <!-- VERSION TAG -->
   
   <!-- INPUTS -->
   <input type="text" id="agent-name" placeholder="ENTER CODENAME / EMAIL...">
   <input type="password" id="pass-input" placeholder="ENTER SECURITY KEY...">
   
   <button class="login-btn" onclick="attemptLogin()">AUTHENTICATE</button>
+  
+  <!-- THE MISSING BUTTON IS NOW HERE -->
+  <button class="req-btn" onclick="requestAccess()">[ REQUEST ACCESS CODE ]</button>
   
   <p id="error-msg" style="color: red; margin-top: 15px;"></p>
 </div>
@@ -117,37 +133,34 @@ input {
 
 <script>
     // --- 1. THE AGENT DATABASE ---
-    // This is where you add your friends.
-    // Format: "email": "password"
+    // I have pre-loaded YOUR account.
     const agentDatabase = {
-        "eliaz2025@swbgs.com": "NotZachFire"    
+        "eliaz2025@swbgs.com": "NotZachFire", // <--- YOU
+        "guest": "guest"                      // <--- BACKUP
     };
     
     // CHANGE THIS TO YOUR REAL EMAIL FOR REQUESTS
     const adminEmail = "eliaz2025@swbgs.com"; 
 
-    // --- 2. LOGIN LOGIC (Advanced) ---
+    // --- 2. LOGIN LOGIC ---
     function attemptLogin() {
-        let name = document.getElementById("agent-name").value.toLowerCase().trim(); // Their Email
-        let pass = document.getElementById("pass-input").value; // Their Password
+        let name = document.getElementById("agent-name").value.toLowerCase().trim(); 
+        let pass = document.getElementById("pass-input").value;
         let errorBox = document.getElementById("error-msg");
 
-        // Check if the person exists in the database
+        console.log("Attempting login for:", name); // Debug
+
         if (agentDatabase[name]) {
-            // If they exist, check if the password matches THEIR password
             if (agentDatabase[name] === pass) {
-                // SUCCESS!
                 localStorage.setItem("agentName", name);
                 unlockSystem(name);
             } else {
-                // WRONG PASSWORD for that specific user
-                errorBox.innerText = "ACCESS DENIED: WRONG PASSWORD FOR " + name.toUpperCase();
-                document.getElementById("auth-container").style.borderColor = "red";
+                errorBox.innerText = "ACCESS DENIED: WRONG PASSWORD";
+                document.getElementById("login-screen").style.border = "2px solid red";
             }
         } else {
-            // USER NOT FOUND
-            errorBox.innerText = "ACCESS DENIED: AGENT NOT RECOGNIZED";
-            document.getElementById("auth-container").style.borderColor = "red";
+            errorBox.innerText = "ACCESS DENIED: AGENT NOT FOUND";
+            document.getElementById("login-screen").style.border = "2px solid red";
         }
     }
 
@@ -159,9 +172,10 @@ input {
     }
 
     function unlockSystem(name) {
-        document.getElementById("auth-container").style.display = "none";
-        document.getElementById("app-interface").style.display = "block";
-        document.getElementById("user-display").innerText = name.toUpperCase();
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("main-content").style.display = "block";
+        document.getElementById("agent-badge").style.display = "block";
+        document.getElementById("badge-name").innerText = name.toUpperCase();
     }
 
     function logout() {
